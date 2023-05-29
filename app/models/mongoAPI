@@ -1,0 +1,39 @@
+from utility import *
+
+# CREATE A MONGO CLIENT
+uri = f"mongodb+srv://richardn:{CREDENTIAL.password}\
+    @gymjunkies.vgwfawv.mongodb.net/"
+clt = MongoClient(uri)
+
+# GLOBAL VARIABLES
+USERS = clt["Gym"]["Users"]
+EXERCISES = clt["Gym"]["Exercises"]
+MESSAGES = clt["Gym"]["Msg"]
+
+
+# API'S FUNCTIONS
+# ADMINISTRATOR
+
+def generateToken(coll = USERS):
+    if (checkTimestamp(getInDatabase({'name' : "Admin"}).attribute.timestamp)):
+        return getInDatabase({'name' : "Admin"}).attribute.token
+    token = token(125)
+    updateItem(coll, {'name' : "Admin"}, {'attribute' : {'token' : token, 
+                                         'timestamp' : Timestamp()}})
+    return token
+
+def addUser(name, password, token):
+    t = getInDatabase({'name' : "Admin"}).attribute.token
+    if (t == token and checkTimestamp(getInDatabase({'name' : "Admin"}).attribute.timestamp)):
+        return addItem(USERS, {'name' : name,
+                            'password' : password,
+                            'attribute' : {}})
+    return None
+    
+def removeUser(name):
+    return removeItem(USERS, {'name' : name})  
+
+# ADMINISTRATOR
+
+# Users
+# Users
